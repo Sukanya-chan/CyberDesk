@@ -1,0 +1,68 @@
+"""CyberDesk FastAPI application entrypoint (Phase 1 foundation)."""
+import logging
+
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
+
+from app.api.health import router as health_router
+from app.core.config import get_settings
+
+logger = logging.getLogger("cyberdesk")
+logging.basicConfig(level=logging.INFO)
+
+settings = get_settings()
+
+app = FastAPI(title=settings.app_name)
+
+# CORS: only the configured local frontend origin(s) are allowed.
+# No wildcard origin is used, even in development, to keep the
+# configuration safe to carry forward.
+allowed_origins = [
+    origin.strip()
+    for origin in settings.cors_allowed_origins.split(",")
+    if origin.strip()
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request, exc: StarletteHTTPException) -> JSONResponse:
+    """Return a consistent JSON error shape for HTTP errors."""
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"error": {"message": exc.detail, "status_code": exc.status_code}},
+    )
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(
+    request: Request, exc: RequestValidationError
+) -> JSONResponse:
+    """Return a consistent JSON error shape for request validation errors."""
+    return JSONResponse(
+        status_code=422,
+        content={"error": {"message": "Invalid request", "details": exc.errors()}},
+    )
+
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    """Catch-all handler that never leaks internals to the client."""
+    logger.exception("Unhandled exception while processing request")
+    return JSONResponse(
+        status_code=500,
+        content={"error": {"message": "Internal server error"}},
+    )
+
+
+app.include_router(health_router, prefix="/api")
