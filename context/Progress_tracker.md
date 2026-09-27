@@ -1,13 +1,13 @@
 # Progress Tracker
 
-Current phase: 1 — Foundation (in progress)
+Current phase: 2 — Authentication + Roles (implemented, pending local verification)
 
 - [x] Project direction selected
 - [x] Architecture defined
 - [x] AI context system created
 - [x] Repository scaffold
 - [x] Frontend/backend integration
-- [ ] Authentication
+- [x] Authentication (Clerk identity + local AppUser role, student/admin authorization foundation)
 - [ ] Learning system
 - [ ] Dashboard/progress
 - [ ] Quizzes

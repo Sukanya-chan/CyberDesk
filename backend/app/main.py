@@ -1,4 +1,4 @@
-"""CyberDesk FastAPI application entrypoint (Phase 1 foundation)."""
+"""CyberDesk FastAPI application entrypoint."""
 import logging
 
 from fastapi import FastAPI, Request
@@ -7,8 +7,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from app.api.auth import router as auth_router
 from app.api.health import router as health_router
 from app.core.config import get_settings
+from app.db.session import Base, engine
+
+# Import models so they register on Base.metadata before create_all().
+# Phase 2 introduces the first real table (AppUser); no migration tool is
+# in place yet (SQLite MVP, per context/Decisions.md ADR-002), so this is
+# the same "create tables that don't exist" pattern used for the earlier
+# connectivity check.
+import app.models  # noqa: E402,F401
 
 logger = logging.getLogger("cyberdesk")
 logging.basicConfig(level=logging.INFO)
@@ -16,6 +25,10 @@ logging.basicConfig(level=logging.INFO)
 settings = get_settings()
 
 app = FastAPI(title=settings.app_name)
+
+# SQLite MVP: create any tables that don't exist yet. Never drops or
+# alters existing tables, so this is safe to run on every startup.
+Base.metadata.create_all(bind=engine)
 
 # CORS: only the configured local frontend origin(s) are allowed.
 # No wildcard origin is used, even in development, to keep the
@@ -66,3 +79,4 @@ async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONR
 
 
 app.include_router(health_router, prefix="/api")
+app.include_router(auth_router, prefix="/api")

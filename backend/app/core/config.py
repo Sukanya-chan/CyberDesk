@@ -17,6 +17,17 @@ class Settings(BaseSettings):
     # Comma-separated list of allowed origins for CORS, parsed in main.py.
     cors_allowed_origins: str = "http://localhost:5173"
 
+    # Clerk (Phase 2). CLERK_SECRET_KEY must never be exposed to the
+    # frontend. No default is provided — an empty value is caught
+    # explicitly where it's used so misconfiguration fails loudly.
+    #
+    # CLERK_JWT_KEY (the PEM public key from the Clerk Dashboard) enables
+    # fast, networkless local signature verification. It's optional: if
+    # left unset, the SDK falls back to fetching Clerk's JWKS over the
+    # network and caching it in memory.
+    clerk_secret_key: str = ""
+    clerk_jwt_key: str = ""
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

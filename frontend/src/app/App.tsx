@@ -1,10 +1,30 @@
-import { HealthPage } from "../pages/HealthPage";
+import { useState } from "react";
+
+import { ProtectedRoute } from "../components/ProtectedRoute";
+import { AccountPage } from "../pages/AccountPage";
+import { SignInPage } from "../pages/SignInPage";
+import { SignUpPage } from "../pages/SignUpPage";
 
 /**
- * Application shell. Phase 1 renders a single page directly; routing
- * will be introduced once there is more than one real page to route
- * between (see README "Known limitations").
+ * Application shell. Signed-out visitors see sign-in/sign-up (toggle);
+ * signed-in visitors see the authenticated account view. See
+ * ProtectedRoute for why this gating is UX-only, not a security control.
  */
 export function App() {
-  return <HealthPage />;
+  const [showSignUp, setShowSignUp] = useState(false);
+
+  return (
+    <ProtectedRoute
+      fallback={
+        <>
+          {showSignUp ? <SignUpPage /> : <SignInPage />}
+          <button type="button" onClick={() => setShowSignUp((prev) => !prev)}>
+            {showSignUp ? "Already have an account? Sign in" : "New here? Sign up"}
+          </button>
+        </>
+      }
+    >
+      <AccountPage />
+    </ProtectedRoute>
+  );
 }
