@@ -1,6 +1,6 @@
 # Progress Tracker
 
-Current phase: 2 — Authentication + Roles (implemented, pending local verification)
+Current phase: 3 — Learning Content System (implemented in code; pending local verification)
 
 - [x] Project direction selected
 - [x] Architecture defined
@@ -8,13 +8,13 @@ Current phase: 2 — Authentication + Roles (implemented, pending local verifica
 - [x] Repository scaffold
 - [x] Frontend/backend integration
 - [x] Authentication (Clerk identity + local AppUser role, student/admin authorization foundation)
-- [ ] Learning system
+- [x] Learning system
 - [ ] Dashboard/progress
 - [ ] Quizzes
 - [ ] Search
-- [ ] Admin
+- [x] Admin
 - [ ] Safe challenges
-- [ ] Testing/security review
+- [x] Phase 3 tests/security checks added
 - [ ] Report/demo preparation
 
 Update this file only after real project progress.

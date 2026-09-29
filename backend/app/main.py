@@ -9,6 +9,8 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.api.auth import router as auth_router
 from app.api.health import router as health_router
+from app.api.learning import router as learning_router
+from app.api.admin_learning import router as admin_learning_router
 from app.core.config import get_settings
 from app.db.session import Base, engine
 
@@ -80,3 +82,5 @@ async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONR
 
 app.include_router(health_router, prefix="/api")
 app.include_router(auth_router, prefix="/api")
+app.include_router(learning_router, prefix="/api")
+app.include_router(admin_learning_router, prefix="/api")

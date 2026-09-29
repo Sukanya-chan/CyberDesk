@@ -11,7 +11,13 @@ type LoadState = "loading" | "success" | "error";
  * BACKEND assigned — never a role read from Clerk or the frontend itself,
  * since the frontend is not a trusted source of authorization data.
  */
-export function AccountPage() {
+export function AccountPage({
+  onLearn,
+  onAdmin,
+}: {
+  onLearn: () => void;
+  onAdmin: () => void;
+}) {
   const { getToken } = useAuth();
   const [state, setState] = useState<LoadState>("loading");
   const [user, setUser] = useState<AppUser | null>(null);
@@ -45,10 +51,18 @@ export function AccountPage() {
       {state === "loading" && <p role="status">Loading your account…</p>}
       {state === "error" && <p role="alert">Could not load account: {errorMessage}</p>}
       {state === "success" && user && (
-        <ul>
+        <>
+          <nav aria-label="CyberDesk navigation">
+            <button type="button" onClick={onLearn}>Learning</button>
+            {user.role === "admin" && (
+              <button type="button" onClick={onAdmin}>Admin Content</button>
+            )}
+          </nav>
+          <ul>
           <li>Role: {user.role}</li>
           <li>Clerk user ID: {user.clerk_user_id}</li>
-        </ul>
+          </ul>
+        </>
       )}
     </main>
   );
