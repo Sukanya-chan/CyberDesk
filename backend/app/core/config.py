@@ -4,6 +4,7 @@ All configuration must come from the environment (see .env.example).
 No secrets or environment-specific values are hardcoded here.
 """
 from functools import lru_cache
+from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -29,7 +30,7 @@ class Settings(BaseSettings):
     clerk_jwt_key: str = ""
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=Path(__file__).resolve().parents[2] / ".env",
         env_file_encoding="utf-8",
         extra="ignore",
     )

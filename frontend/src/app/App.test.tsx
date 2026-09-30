@@ -21,6 +21,7 @@ vi.mock("@clerk/react", () => ({
   SignUp: () => <div>Clerk sign-up form</div>,
   UserButton: () => <div>User menu</div>,
   useAuth: () => ({ getToken: vi.fn().mockResolvedValue("fake-token") }),
+  useClerk: () => ({ signOut: vi.fn() }),
 }));
 
 describe("App shell (Phase 2 auth states)", () => {

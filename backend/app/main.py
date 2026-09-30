@@ -11,6 +11,10 @@ from app.api.auth import router as auth_router
 from app.api.health import router as health_router
 from app.api.learning import router as learning_router
 from app.api.admin_learning import router as admin_learning_router
+from app.api.assessment import router as assessment_router
+from app.api.admin_assessment import router as admin_assessment_router
+from app.api.challenges import router as challenges_router
+from app.api.admin_challenges import router as admin_challenges_router
 from app.core.config import get_settings
 from app.db.session import Base, engine
 
@@ -84,3 +88,7 @@ app.include_router(health_router, prefix="/api")
 app.include_router(auth_router, prefix="/api")
 app.include_router(learning_router, prefix="/api")
 app.include_router(admin_learning_router, prefix="/api")
+app.include_router(assessment_router, prefix="/api")
+app.include_router(admin_assessment_router, prefix="/api")
+app.include_router(challenges_router, prefix="/api")
+app.include_router(admin_challenges_router, prefix="/api")
