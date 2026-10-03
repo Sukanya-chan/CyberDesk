@@ -15,6 +15,8 @@ from app.api.assessment import router as assessment_router
 from app.api.admin_assessment import router as admin_assessment_router
 from app.api.challenges import router as challenges_router
 from app.api.admin_challenges import router as admin_challenges_router
+from app.api.progress import router as progress_router
+from app.api.ai import router as ai_router
 from app.core.config import get_settings
 from app.db.session import Base, engine
 
@@ -92,3 +94,5 @@ app.include_router(assessment_router, prefix="/api")
 app.include_router(admin_assessment_router, prefix="/api")
 app.include_router(challenges_router, prefix="/api")
 app.include_router(admin_challenges_router, prefix="/api")
+app.include_router(progress_router, prefix="/api")
+app.include_router(ai_router, prefix="/api")

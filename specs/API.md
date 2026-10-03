@@ -39,3 +39,18 @@ Admin-only:
 Reorder requests use `{"ordered_ids": [3, 1, 2]}` and must contain every child exactly once.
 
 Quiz, progress, search, challenges, and AI endpoints remain future phases.
+
+
+## Progress
+Authenticated student:
+- `GET /progress/dashboard`
+- `POST /lessons/{lesson_id}/complete`
+- `GET /lessons/{lesson_id}/progress`
+
+Progress is derived from authoritative records owned by the authenticated user.
+
+## Optional AI
+Authenticated student:
+- `POST /ai/assist`
+
+The endpoint requires `GEMINI_API_KEY` on the backend. The API key is never exposed to the browser. Core CyberDesk functionality remains available when AI is not configured.

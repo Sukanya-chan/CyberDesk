@@ -1,6 +1,8 @@
 import { useAuth, useClerk, UserButton } from "@clerk/react";
 import { useEffect, useState } from "react";
 import { fetchCurrentUser } from "../services/authFetch";
+import { fetchDashboardProgress } from "../services/progress";
+import type { DashboardProgress } from "../types/progress";
 import type { AppUser } from "../types/user";
 
 type LoadState = "loading" | "success" | "error";
@@ -15,11 +17,12 @@ export function AccountPage({
   const [state, setState] = useState<LoadState>("loading");
   const [user, setUser] = useState<AppUser | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const [progress, setProgress] = useState<DashboardProgress | null>(null);
 
   useEffect(() => {
     let cancelled = false;
-    fetchCurrentUser(getToken).then((data) => {
-      if (!cancelled) { setUser(data); setState("success"); }
+    Promise.all([fetchCurrentUser(getToken), fetchDashboardProgress(getToken)]).then(([data, progressData]) => {
+      if (!cancelled) { setUser(data); setProgress(progressData); setState("success"); }
     }).catch((error: unknown) => {
       if (!cancelled) { setErrorMessage(error instanceof Error ? error.message : "Unknown error"); setState("error"); }
     });
@@ -44,6 +47,28 @@ export function AccountPage({
           </div>
         )}
       </section>
+
+      {state === "success" && progress && (
+        <>
+          <div className="section-head"><h2>Progress</h2><span className="muted">Authoritative server-side learning state</span></div>
+          <section className="grid grid-4">
+            <div className="card"><span className="muted">Lessons</span><div className="metric">{progress.completed_lessons}/{progress.total_lessons}</div></div>
+            <div className="card"><span className="muted">Completion</span><div className="metric">{progress.lesson_percent}%</div></div>
+            <div className="card"><span className="muted">Quiz attempts</span><div className="metric">{progress.quiz_attempts}</div></div>
+            <div className="card"><span className="muted">Challenge points</span><div className="metric">{progress.challenge_points}</div></div>
+          </section>
+          <section className="grid grid-2 progress-courses">
+            {progress.courses.map(course => <article className="card" key={course.course_id}>
+              <div className="card-action"><span className="eyebrow">COURSE</span><span className="tag">{course.percent}%</span></div>
+              <h3>{course.title}</h3>
+              <div className="progress-track" aria-label={`${course.percent}% complete`}><span style={{width:`${course.percent}%`}} /></div>
+              <p className="muted">{course.completed_lessons} of {course.total_lessons} published lessons completed.</p>
+              <button onClick={() => onLearn()}>Continue →</button>
+            </article>)}
+            {!progress.courses.length && <div className="card"><h3>No published courses yet.</h3><p className="muted">Ask an admin to publish learning content.</p></div>}
+          </section>
+        </>
+      )}
 
       <div className="section-head"><h2>Workspace</h2><span className="muted">Choose your next operation</span></div>
       <section className="grid grid-3">

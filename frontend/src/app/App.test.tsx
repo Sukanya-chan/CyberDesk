@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { App } from "./App";
 import * as authFetch from "../services/authFetch";
+import * as progress from "../services/progress";
 
 // Mock @clerk/react entirely: no real Clerk keys/network in unit tests.
 // `mockSignedIn` is a module-level flag the tests below flip to switch
@@ -54,6 +55,17 @@ describe("App shell (Phase 2 auth states)", () => {
       role: "student",
       created_at: "2026-01-01T00:00:00Z",
       updated_at: "2026-01-01T00:00:00Z",
+    });
+    vi.spyOn(progress, "fetchDashboardProgress").mockResolvedValue({
+      completed_lessons: 0,
+      total_lessons: 0,
+      lesson_percent: 0,
+      quiz_attempts: 0,
+      best_quiz_score: null,
+      solved_challenges: 0,
+      challenge_points: 0,
+      courses: [],
+      recent_course_slug: null,
     });
 
     render(<App />);

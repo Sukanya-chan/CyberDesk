@@ -71,6 +71,7 @@ a { color: inherit; }
 .grid { display:grid; gap:16px; }
 .grid-2 { grid-template-columns: repeat(2,minmax(0,1fr)); }
 .grid-3 { grid-template-columns: repeat(3,minmax(0,1fr)); }
+.grid-4 { grid-template-columns: repeat(4,minmax(0,1fr)); }
 .card {
   border:1px solid var(--line); border-radius:16px; padding:20px; background:var(--panel);
   backdrop-filter: blur(12px); transition: transform .18s ease, border-color .18s ease, background .18s ease;
@@ -118,3 +119,14 @@ legend { padding:0 8px; font-weight:700; line-height:1.45; }
   .nav-stack { grid-template-columns:repeat(2,1fr); }
   .page-title { font-size:2.2rem; }
 }
+
+.progress-track { height:8px; margin:14px 0 10px; border-radius:999px; background:rgba(255,255,255,.06); overflow:hidden; }
+.progress-track span { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,var(--violet),var(--cyan)); }
+.ai-panel { max-width:900px; }
+.field-label { display:block; margin-bottom:8px; color:var(--muted); font-size:.85rem; }
+textarea { width:100%; resize:vertical; padding:14px; border-radius:12px; border:1px solid var(--line); background:rgba(5,5,10,.65); color:var(--text); font:inherit; line-height:1.55; }
+textarea:focus-visible { outline:2px solid var(--violet); outline-offset:2px; }
+.ai-answer { margin-top:22px; padding:20px; border-radius:14px; border:1px solid var(--line); background:rgba(101,230,223,.035); }
+.ai-answer p { white-space:pre-wrap; color:var(--text); line-height:1.75; }
+@media (max-width: 1000px) { .grid-4 { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width: 520px) { .grid-4 { grid-template-columns:1fr 1fr; } }

@@ -11,12 +11,13 @@ import { AssessmentCataloguePage } from "../pages/assessments/AssessmentCatalogu
 import { QuizPage } from "../pages/assessments/QuizPage";
 import { ChallengeCataloguePage } from "../pages/challenges/ChallengeCataloguePage";
 import { ChallengePage } from "../pages/challenges/ChallengePage";
+import { AIAssistantPage } from "../pages/AIAssistantPage";
 
 type View =
   | { kind: "account" } | { kind: "catalogue" } | { kind: "course"; slug: string }
   | { kind: "lesson"; courseSlug: string; lessonSlug: string } | { kind: "admin" }
   | { kind: "assessments" } | { kind: "quiz"; id: number }
-  | { kind: "challenges" } | { kind: "challenge"; id: number };
+  | { kind: "challenges" } | { kind: "challenge"; id: number } | { kind: "ai" };
 
 export function App() {
   const [showSignUp, setShowSignUp] = useState(false);
@@ -34,6 +35,7 @@ export function App() {
           <button className={`nav-btn ${["catalogue","course","lesson"].includes(view.kind) ? "active" : ""}`} onClick={() => setView({kind:"catalogue"})}>◇ Learning</button>
           <button className={`nav-btn ${["assessments","quiz"].includes(view.kind) ? "active" : ""}`} onClick={() => setView({kind:"assessments"})}>◈ Assessments</button>
           <button className={`nav-btn ${["challenges","challenge"].includes(view.kind) ? "active" : ""}`} onClick={() => setView({kind:"challenges"})}>⚡ Challenges</button>
+          <button className={`nav-btn ${view.kind === "ai" ? "active" : ""}`} onClick={() => setView({kind:"ai"})}>✦ AI Tutor</button>
         </nav>
         <div className="sidebar-foot">Safe labs · Flag-based practice<br />Local-first student workspace</div>
       </aside>
@@ -57,6 +59,7 @@ export function App() {
           {view.kind === "quiz" && <QuizPage quizId={view.id} onBack={() => setView({kind:"assessments"})} />}
           {view.kind === "challenges" && <ChallengeCataloguePage onChallenge={(id) => setView({kind:"challenge",id})} onBack={() => setView({kind:"account"})} />}
           {view.kind === "challenge" && <ChallengePage challengeId={view.id} onBack={() => setView({kind:"challenges"})} />}
+          {view.kind === "ai" && <AIAssistantPage />}
         </div>
       </div>
     </div>

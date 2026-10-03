@@ -1,6 +1,6 @@
 # Progress Tracker
 
-Current phase: 4 + 5 — Assessment + Safe Challenge Foundations
+Current phase: 6–8 — Finalization
 
 - [x] Project direction selected
 - [x] Architecture defined
@@ -9,12 +9,14 @@ Current phase: 4 + 5 — Assessment + Safe Challenge Foundations
 - [x] Frontend/backend integration
 - [x] Authentication (Clerk identity + local AppUser role, student/admin authorization foundation)
 - [x] Learning system
-- [ ] Dashboard/progress
+- [x] Dashboard/progress
 - [x] Quiz data foundation (Phase 4A)
 - [ ] Search
 - [x] Admin
 - [x] Safe challenge data foundation (Phase 5A)
 - [x] Phase 3 tests/security checks added
-- [ ] Report/demo preparation
+- [x] Phase 6–8 implementation package
+- [ ] Final browser smoke test
+- [ ] Final report/demo preparation
 
 Update this file only after real project progress.

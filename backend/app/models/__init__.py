@@ -19,6 +19,11 @@ __all__ = [
     "Question",
     "QuestionOption",
     "Challenge",
+    "QuizAttempt",
+    "QuizAnswer",
+    "ChallengeSubmission",
+    "LessonProgress",
 ]
 from app.models.quiz_attempt import QuizAttempt, QuizAnswer
 from app.models.challenge_submission import ChallengeSubmission
+from app.models.lesson_progress import LessonProgress
