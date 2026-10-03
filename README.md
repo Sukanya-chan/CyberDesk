@@ -1,14 +1,52 @@
-# CyberDesk AI Context System
+# 🛡️ CyberDesk
 
-Use this as the source-of-truth context package for AI-assisted development.
+CyberDesk is an interactive cybersecurity learning and practical platform designed for students to learn security concepts, test their knowledge, solve safe cybersecurity challenges, and track their learning progress in one place.
 
-Recommended workflow:
-1. Put these files in the CyberDesk repository.
-2. Tell the agent to read `AGENTS.md`.
-3. Keep `context/` stable project knowledge.
-4. Keep `specs/` feature contracts.
-5. Use `.ai/prompts/` for repeatable engineering tasks.
-6. Update `context/Progress_tracker.md` after real milestones.
-7. Record architecture changes in `context/Decisions.md`.
+The project combines structured cybersecurity education with assessments, controlled CTF-style challenges, authentication, progress analytics, and an optional AI-powered defensive cybersecurity tutor.
 
-The agent must not convert its own assumptions into requirements.
+## 🌐 Live
+
+- **Website:** `YOUR_FRONTEND_RENDER_URL`
+- **API:** https://cyberdesk-pldr.onrender.com
+- **API Docs:** https://cyberdesk-pldr.onrender.com/docs
+- **API Health:** https://cyberdesk-pldr.onrender.com/api/health
+
+> The FastAPI backend is currently live on Render. The frontend URL will be added after the frontend deployment is completed.
+
+---
+
+## ⚙️ Current v1.0 Features
+
+- React + TypeScript cybersecurity learning interface
+- Clerk authentication and role-based authorization
+- Cybersecurity course → module → lesson hierarchy
+- Published/draft learning content
+- Interactive cybersecurity assessments
+- MCQ questions and automatic scoring
+- Quiz attempts and result history
+- Safe CTF-style cybersecurity challenges
+- Challenge hints and flag validation
+- Challenge points and solved-state tracking
+- Student progress dashboard
+- Course completion tracking
+- Quiz statistics
+- Challenge statistics
+- Protected admin content management
+- Optional Gemini-powered AI Tutor
+- REST API through FastAPI
+- Automated backend and frontend testing
+- Production-ready deployment configuration
+
+---
+
+## 🧠 Core Modules
+
+### 📚 Learning System
+
+CyberDesk organizes learning content as:
+
+```text
+Category
+   └── Course
+        └── Module
+             └── Lesson
