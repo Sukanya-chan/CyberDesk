@@ -17,8 +17,10 @@ the student can verify the challenge-submit flow locally.
 
 from __future__ import annotations
 
+import os
+
 from app.db.session import Base, SessionLocal, engine
-from app.models import Challenge, Course, Question, QuestionOption, Quiz
+from app.models import AppUser, Challenge, Course, Question, QuestionOption, Quiz
 from app.services.challenges import flag_hash
 from seed_learning import seed as seed_learning
 
@@ -242,6 +244,37 @@ def seed_challenges(db) -> list[Challenge]:
     return seeded
 
 
+def ensure_admin_user(db) -> None:
+    """Promote the configured Clerk user to admin, if that AppUser exists.
+
+    Set ADMIN_CLERK_USER_ID in the deployment environment. The user must have
+    signed in at least once so Clerk authentication has created the AppUser row.
+    """
+    clerk_user_id = os.getenv("ADMIN_CLERK_USER_ID", "").strip()
+    if not clerk_user_id:
+        print("ADMIN_CLERK_USER_ID not set; skipping admin promotion.")
+        return
+
+    user = (
+        db.query(AppUser)
+        .filter(AppUser.clerk_user_id == clerk_user_id)
+        .first()
+    )
+    if user is None:
+        print(
+            "Configured admin Clerk user is not registered in app_users yet; "
+            "skipping admin promotion until that account signs in."
+        )
+        return
+
+    if user.role != "admin":
+        user.role = "admin"
+        db.commit()
+        print(f"Promoted configured Clerk user to admin: {clerk_user_id}")
+    else:
+        print(f"Configured admin already has admin role: {clerk_user_id}")
+
+
 def seed() -> None:
     # Safe for the already-created isolated DB and also works on a fresh one.
     import app.models  # noqa: F401
@@ -272,6 +305,8 @@ def seed() -> None:
         challenges = seed_challenges(db)
 
         db.commit()
+
+        ensure_admin_user(db)
 
         # Refresh after commit for reliable IDs in the output.
         db.refresh(quiz)
