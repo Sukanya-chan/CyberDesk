@@ -6,7 +6,7 @@ The project combines structured cybersecurity education with assessments, contro
 
 ## 🌐 Live
 
-- **Website:** `YOUR_FRONTEND_RENDER_URL`
+- **Website:** `https://cyberdesk-1.onrender.com`
 - **API:** https://cyberdesk-pldr.onrender.com
 - **API Docs:** https://cyberdesk-pldr.onrender.com/docs
 - **API Health:** https://cyberdesk-pldr.onrender.com/api/health
