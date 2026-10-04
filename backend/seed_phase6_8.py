@@ -9,6 +9,8 @@ The script is idempotent:
 - creates/publishes one 5-question assessment
 - creates/publishes three safe flag-based challenges
 - does not delete existing data
+- ensures the configured Clerk user exists with the admin role when
+  ADMIN_CLERK_USER_ID is set
 - stores challenge flags only as SHA-256 hashes
 
 Demo challenge flags are intentionally simple and are printed after seeding so
@@ -204,6 +206,58 @@ def seed_quiz(db, course: Course) -> Quiz:
     return quiz
 
 
+def ensure_admin_user(db) -> AppUser | None:
+    """Ensure the configured Clerk user exists as an admin.
+
+    Set ADMIN_CLERK_USER_ID in the deployment environment.
+
+    Unlike the previous version, this function CREATES the AppUser row when
+    it does not already exist. This makes the seed work even when the admin
+    account has not signed in before the deployment starts.
+
+    Existing users are not deleted and only the configured Clerk user's role
+    is changed.
+    """
+    clerk_user_id = os.getenv("ADMIN_CLERK_USER_ID", "").strip()
+
+    if not clerk_user_id:
+        print("ADMIN_CLERK_USER_ID not set; skipping admin setup.")
+        return None
+
+    user = (
+        db.query(AppUser)
+        .filter(AppUser.clerk_user_id == clerk_user_id)
+        .first()
+    )
+
+    if user is None:
+        user = AppUser(
+            clerk_user_id=clerk_user_id,
+            role="admin",
+        )
+        db.add(user)
+        db.flush()
+        print(
+            "Created configured admin AppUser: "
+            f"{clerk_user_id}"
+        )
+    elif user.role != "admin":
+        old_role = user.role
+        user.role = "admin"
+        db.flush()
+        print(
+            "Promoted configured Clerk user: "
+            f"{clerk_user_id} ({old_role} -> admin)"
+        )
+    else:
+        print(
+            "Configured Clerk user already has admin role: "
+            f"{clerk_user_id}"
+        )
+
+    return user
+
+
 def seed_challenges(db) -> list[Challenge]:
     seeded: list[Challenge] = []
 
@@ -244,37 +298,6 @@ def seed_challenges(db) -> list[Challenge]:
     return seeded
 
 
-def ensure_admin_user(db) -> None:
-    """Promote the configured Clerk user to admin, if that AppUser exists.
-
-    Set ADMIN_CLERK_USER_ID in the deployment environment. The user must have
-    signed in at least once so Clerk authentication has created the AppUser row.
-    """
-    clerk_user_id = os.getenv("ADMIN_CLERK_USER_ID", "").strip()
-    if not clerk_user_id:
-        print("ADMIN_CLERK_USER_ID not set; skipping admin promotion.")
-        return
-
-    user = (
-        db.query(AppUser)
-        .filter(AppUser.clerk_user_id == clerk_user_id)
-        .first()
-    )
-    if user is None:
-        print(
-            "Configured admin Clerk user is not registered in app_users yet; "
-            "skipping admin promotion until that account signs in."
-        )
-        return
-
-    if user.role != "admin":
-        user.role = "admin"
-        db.commit()
-        print(f"Promoted configured Clerk user to admin: {clerk_user_id}")
-    else:
-        print(f"Configured admin already has admin role: {clerk_user_id}")
-
-
 def seed() -> None:
     # Safe for the already-created isolated DB and also works on a fresh one.
     import app.models  # noqa: F401
@@ -304,9 +327,13 @@ def seed() -> None:
         quiz = seed_quiz(db, course)
         challenges = seed_challenges(db)
 
-        db.commit()
+        # Always run admin setup before the final commit. This means a fresh
+        # Render SQLite database can recreate the configured admin account,
+        # while an existing database can promote the same account from
+        # student -> admin on every startup.
+        admin_user = ensure_admin_user(db)
 
-        ensure_admin_user(db)
+        db.commit()
 
         # Refresh after commit for reliable IDs in the output.
         db.refresh(quiz)
@@ -330,6 +357,12 @@ def seed() -> None:
         print("\nExpected public content:")
         print(f"  GET /api/quizzes -> quiz {quiz.id}")
         print(f"  GET /api/challenges -> {len(challenges)} challenges")
+
+        if admin_user is not None:
+            print(
+                f"  Admin user  : {admin_user.clerk_user_id} "
+                f"[{admin_user.role}]"
+            )
 
         print(
             "\nCore progress remains server-derived: quiz attempts and "
